@@ -145,7 +145,7 @@ $(window).on("touchend",function(e){
   }
 });
 
-$(window).on("mousewheel",function(e){
+$("body").on("mousewheel",function(e){
 	var sp = st = true
 	if($(e.target).parent(".section").length != 0){
 		var scrollTop     = $(window).scrollTop(),
