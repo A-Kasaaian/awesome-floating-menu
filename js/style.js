@@ -6,7 +6,7 @@ $(".ct-nav-main li").on("click", function(e){
   switchActiveMenu(FlyingItem)
 })
 
-var lockScroll = () => {
+
   var scrollPosition = [
     self.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft,
     self.pageYOffset || document.documentElement.scrollTop  || document.body.scrollTop
@@ -15,7 +15,7 @@ var lockScroll = () => {
   html.data('scroll-position', scrollPosition);
   html.data('previous-overflow', html.css('overflow'));
   html.css('overflow', 'hidden');
-}
+
 var unLockScroll = () => {
   var html = jQuery('html');
   var scrollPosition = html.data('scroll-position');
@@ -112,12 +112,10 @@ var switchActiveMenu = (FlyingItem) => {
 
   }
 }
+
 //init scroll position and first active itemWidth
-$('html, body').animate({
-  scrollTop: 0
-}, 500);
-setTimeout(function(){isOnTop= true},500)
 switchActiveMenu($('nav li:first-child'));
+isOnTop= true;
 
 var changetouch = 0;
 $(window).on("touchstart",function(e){
@@ -148,19 +146,32 @@ $(window).on("touchend",function(e){
 });
 
 $(window).on("mousewheel",function(e){
-  console.log(e);
-  var elHeight = e.target.clientHeight - $(e.target).parent(".section").height();
-  debugger;
-  if(($(e.target).hasClass("section") || elHeight < 0) && enableScrolling == true){
-    e.preventDefault();
-    if(e.originalEvent.deltaY > 0){
-      FlyingItem = $($("nav li.active").next()[0]);
-      switchActiveMenu(FlyingItem);
-    } else if (e.originalEvent.deltaY < 0){
-      FlyingItem = $("nav li.active").prev();
-      switchActiveMenu(FlyingItem);
-    }
-  }
+	var sp = st = true
+	if($(e.target).parent(".section").length != 0){
+		var scrollTop     = $(window).scrollTop(),
+		  elementOffset = $(e.target).offset().top,
+		  distance      = (elementOffset - scrollTop);
+		var scrollTop2     = $(window).scrollTop(),
+		  elementOffset2 = $(e.target).parent(".section").offset().top,
+		  distanceParent      = (elementOffset - scrollTop);
+
+		var T = e.target.clientHeight - Math.abs(distance) - $("header").outerHeight();
+		var el = $(e.target).parent(".section").children();
+		var childrenHeight = 0; el.each(function(){childrenHeight = childrenHeight + $(this).height()});
+		var elHeight = childrenHeight - $(e.target).parent(".section").height();
+		sp = (T < $("#blueprints").outerHeight() + 10),
+		st = (distanceParent - distance == 0);
+	}
+  
+	if(enableScrolling == true){
+		if(e.originalEvent.deltaY > 0  && $($("nav li.active").next()[0]).length > 0 && ($(e.target).hasClass("section") || elHeight < 0 || sp)){
+		  FlyingItem = $($("nav li.active").next()[0]);
+		  switchActiveMenu(FlyingItem);
+		} else if (e.originalEvent.deltaY < 0 && $("nav li.active").prev().length > 0 && ($(e.target).hasClass("section") || elHeight < 0 || st)){
+		  FlyingItem = $("nav li.active").prev();
+		  switchActiveMenu(FlyingItem);
+		}
+	}
 });
 
 $(window).scroll(function(e){
