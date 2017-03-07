@@ -145,24 +145,23 @@ $(window).on("touchend",function(e){
   }
 });
 
-$("body").on("mousewheel",function(e){
+$("body").on("DOMMouseScroll mousewheel wheel",function(e){
 	var sp = st = true
 	if($(e.target).parent(".section").length != 0){
 		var scrollTop     = $(window).scrollTop(),
 		  elementOffset = $(e.target).offset().top,
 		  distance      = (elementOffset - scrollTop);
 		var scrollTop2     = $(window).scrollTop(),
-		  elementOffset2 = $(e.target).parent(".section").offset().top,
-		  distanceParent      = (elementOffset - scrollTop);
+		  elementOffset2 = $(e.target).parent(".section").find(":first-child").offset().top - parseInt($(e.target).parent(".section").css("padding-top")),
+		  distanceParent      = (elementOffset2 - scrollTop);
 
 		var T = e.target.clientHeight - Math.abs(distance) - $("header").outerHeight();
 		var el = $(e.target).parent(".section").children();
 		var childrenHeight = 0; el.each(function(){childrenHeight = childrenHeight + $(this).height()});
 		var elHeight = childrenHeight - $(e.target).parent(".section").height();
 		sp = (T < $("#blueprints").outerHeight() + 10),
-		st = (distanceParent - distance == 0);
+		st = (0 <= (distanceParent - $("header").outerHeight()) && (distanceParent - $("header").outerHeight()) < 1);
 	}
-  
 	if(enableScrolling == true){
 		if(e.originalEvent.deltaY > 0  && $($("nav li.active").next()[0]).length > 0 && ($(e.target).hasClass("section") || elHeight < 0 || sp)){
 		  FlyingItem = $($("nav li.active").next()[0]);
